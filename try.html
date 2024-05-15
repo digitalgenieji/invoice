@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+               @font-face {
+            font-family: 'MyCustomFont';
+            src: url('path/to/font.woff2') format('woff2'),
+                url('path/to/font.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'MyCustomFont', sans-serif;
+        }
+
+        p,
+        h4 {
+            margin: 2px;
+            padding: 0;
+        }
+
+        #validationForm {
+            max-width: 700px;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: auto;
+            margin-top: 50px;
+            padding: 0 20px;
+        }
+
+        .border {
+            border: 2px solid black;
+        }
+
+        #invoice-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            background: rgb(228, 228, 228);
+            padding: 10px;
+        }
+
+        .inv-bound {
+            max-width: 700px;
+            z-index: 100;
+            background: white;
+            margin: auto;
+            padding: 10px;
+        }
+
+        #invoice {
+            padding: 0px;
+            overflow-y: auto;
+            margin-top: 5vh;
+            box-shadow: 2px 2px 2px rgb(141, 141, 141);
+        }
+
+        .inv-header {
+            border: 2px solid black;
+            max-width: 80vw;
+            height: 250px;
+            padding: 10px;
+            position: relative;
+            margin: auto;
+            text-align: center;
+            align-items: center;
+        }
+
+        .inv-header img {
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 8px;
+        }
+
+        .comp-contact p {
+            font-size: 14px;
+        }
+
+        .comp-contact {
+            text-align: start;
+            margin-top: 12px;
+            float: right;
+        }
+
+        .body-head {
+            text-transform: uppercase;
+            text-decoration: underline;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 25px;
+            margin: 25px 0 15px 0;
+        }
+
+        .bode-1 {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .body-1-1,
+        .body-1-2 {
+            border: 2px solid black;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .body-1-1 h4,
+        .body-1-2 h4 {
+            border: 2px solid black;
+            text-align: center;
+            margin: 0;
+            padding: 5px;
+        }
+
+        .body-details {
+            padding: 10px;
+        }
+
+        .body-details-section {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .body-details-section p:nth-child(1) {
+            margin-right: 8px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+            border: 2px solid black;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .body-3-1,
+        .body-4 {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        .body-3-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        .body-4 {
+            margin-top: 20px;
+        }
+
+        .action-button {
+            width: 100%;
+            position: relative;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        #download {
+            font-weight: bold;
+            text-transform: capitalize;
+            width: 150px;
+            color: red;
+            border: 2px solid black;
+            padding: 5px 0;
+            border-radius: 10px;
+            background-color: white;
+            transition: background-color 0.8s ease;
+        }
+
+        #download:hover {
+            cursor: pointer;
+            color: white;
+            background-color: rgba(246, 105, 40, 0.742);
+            border-color: rgba(246, 105, 40, 0.742);
+        }
+
+        @media (min-width: 768px) {
+            .bode-1 {
+                flex-wrap: nowrap;
+            }
+
+            .body-1-1,
+            .body-1-2 {
+                width: 50%;
+            }
+
+            .body-3-1,
+            .body-4 {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .body-3-2 {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <form id="validationForm" onsubmit="getdeliveryDetails(event)">
+        <div class="mb-3">
+            <h3 class="form-label">Download your invoice</h3>
+            <label for="emailInput" class="form-label">Enter Delivery Code</label>
+            <input type="text" class="form-control" id="bookingCode" name="bookingCode" required>
+        </div>
+        <button type="submit">Get Order Details</button>
+    </form>
+
+    <div id="invoice-container">
+        <div class="inv-bound">
+            <div id="invoice">
+                <div class="inv-header">
+                    <img id="invoiceImage"
+                        src="https://onedot.live/wp-content/uploads/2024/03/cd20ba40-3bc3-4563-8077-9d0588c87e0e.png"
+                        alt="logo">
+                    <div class="comp-details">
+                        <h4>OneDot Logistics</h4>
+                        <h4>30A, Giri Babu lane, kolkata 700012</h4>
+                        <h5>GST 19AAOPI2358D2ZM
+                        </h5>
+                    </div>
+                    <div class="comp-contact">
+                        <p>Phone - 9330696402</p>
+                        <p>Email - Onedotlog@gmail.com</p>
+                    </div>
+                </div>
+
+                <p class="body-head">consignment note</p>
+
+                <div class="bode-1">
+                    <div class="body-1-1">
+                        <h4>Sender's Details</h4>
+                        <div class="body-details">
+                            <div class="body-details-section">
+                                <p>Address:</p>
+                                <p id="s-address"></p>
+                            </div>
+                            <div class="body-details-section">
+                                <p>Pincode:</p>
+                                <p id="s-pincode"></p>
+                            </div>
+                            <div class="body-details-section">
+                                <p>City:</p>
+                                <p id="s-city"></p>
+                            </div>
+                            <div class="body-details-section">
+                                <p>State:</p>
+                                <p id="s-state"></p>
+                            </div>
+                            <div class="body-details-section">
+                                <p>Country:</p>
+                                <p id="s-country"></p>
+                            </div>
+                            <div class="body-details-section">
+                                <p>Phone No:</p>
+                                <p id="s-phone"></p>
+                            </div>
+                            <div class="body-details-section">
+                                <p>GST No:</p>
+                                <p id="s-GST"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="body-1-2">
+                        <h4>Receiver's Details</h4>
+                        <div class="body-details">
+                            <div class="body-details-section">
+                                <p>Address:</p>
+                                <p id="f_address"></p>
+                            </div>
+                            <div class="body-details-section">
+                                <p>Pincode:</p>
+                                <p id="f_pincode"></p>
+                            </div>
+                            <div class="body-details-section">
+                                <p>City:</p>
+                                <p id="f_city"></p>
+                            </div>
+                            <div class="body-details-section">
+                                <p>State:</p>
+                                <p id="f_state"></p>
+                            </div>
+                            <div class="body-details-section">
+                                <p>Country:</p>
+                                <p id="f_country"></p>
+                            </div>
+                            <div class="body-details-section">
+                                <p>Phone No:</p>
+                                <p id="f_phone"></p>
+                            </div>
+                            <div class="body-details-section">
+                                <p>GST No:</p>
+                                <p id="f_GST"></p>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="body-2">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 10%;">No of Package(S)</th>
+                                <th style="width: 40%;">Said to Contain</th>
+                                <th style="width: 20%;">Volume</th>
+                                <th style="width: 20%;">Weight</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="package_count">1</td>
+                                <td id="prod_desc"></td>
+                                <td>
+                                    <p id="unit_type">Unit</p>
+                                    <!-- <p id="length">Length</p>
+                                    <p id="width">Width</p> -->
+                                    <p id="t_height">Height</p>
+                                </td>
+                                <td id="t_weight">Weight 1</td>
+                            </tr>
+                            <!-- Add more rows as needed -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="body-3">
+                    <div class="body-3-1">
+                        <div class="body-details-section border">
+                            <p>Total Amount Charged:</p>
+                            <p id="total-charged"></p>
+                        </div>
+                        <div class="body-details-section border">
+                            <p>Total Amount Received:</p>
+                            <p id="total-received"></p>
+                        </div>
+                    </div>
+                    <div class="body-3-2">
+                        <div class="body-details-section border">
+                            <p>Payment Status:</p>
+                            <p id="payment-status"></p>
+                        </div>
+                        <div class="body-details-section border">
+                            <p>Tracking No.:</p>
+                            <p id="tracking-no"></p>
+                        </div>
+                        <div class="body-details-section border">
+                            <p>E-Wayy Bill No.:</p>
+                            <p id="w-way-bill"></p>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="body-4">
+                    <div class="body-4-1">
+                        <div class="body-details-section border">
+                            <p>Invoice No:</p>
+                            <p id="invoice_no"></p>
+                        </div>
+                        <div class="body-details-section border">
+                            <p>Invoice Date:</p>
+                            <p id="invoice_date"></p>
+                        </div>
+                    </div>
+                    <div class="body-4-2">
+                        <div class="body-details-section border">
+                            <p>Invoice Value:</p>
+                            <p id="invoice-value"></p>
+                        </div>
+                        <div class="body-details-section border">
+                            <p>HSN:</p>
+                            <p id="inv_hsn"></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="m-3">
+                <label for="e-wayy-bill" class="form-label">E-Way Bill</label>
+                <input type="text" class="form-control" id="e-wayy-bill" name="e-wayy-bill"
+                    placeholder="Enter E-Way Bill No." required>
+            </div>
+
+            <div class="action-button">
+
+                <button id="download"> download pdf</button>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+
+<script>
+    // const invoiceImage = document.getElementById("invoiceImage");
+    // const imageUrl = "https://onedot.live/wp-content/uploads/2024/03/cd20ba40-3bc3-4563-8077-9d0588c87e0e.png"
+
+    // invoiceImage.src = imageUrl
+
+    let invoiceProps = {
+        invoiceNo: null,
+        invoiceDate: null,
+        invoiceVal: null,
+        hsn: null,
+        eWayBill: null,
+    }
+
+    function getdeliveryDetails(event) {
+        event.preventDefault();
+
+        let packageCount = document.getElementById("package_count");
+        let sAddress = document.getElementById("s-address")
+        let sPincode = document.getElementById("s-pincode")
+        let sCity = document.getElementById("s-city")
+        let sState = document.getElementById("s-state")
+        let sCountry = document.getElementById("s-country")
+        let sPhone = document.getElementById("s-phone")
+        let FAddress = document.getElementById("f_address")
+        let fPincode = document.getElementById("f_pincode")
+        let fCity = document.getElementById("f_city")
+        let fState = document.getElementById("f_state")
+        let fCountry = document.getElementById("f_country")
+        let unit = document.getElementById("unit_type")
+        let description = document.getElementById("prod_desc");
+        let length = document.getElementById("length")
+        let width = document.getElementById("width")
+        let tHeight = document.getElementById("t_height")
+        let totalCharged = document.getElementById("total-charged")
+        let totalReceived = document.getElementById("total-received")
+        let paymentStatus = document.getElementById("payment-status")
+        let trackingNo = document.getElementById("tracking-no")
+        let eWayyBill = document.getElementById("w-way-bill")
+        let tWeight = document.getElementById("t_weight");
+
+        const bookingCode = document.getElementById("bookingCode").value
+
+        axios.get(`https://api.onedot.live/api/delivery/trackOrder.php?bookingCode=${bookingCode}`)
+            .then(function (response) {
+                if (response.data.status == 200) {
+                    const data = response.data.body
+                    if (data != null) {
+                        sAddress.innerText = data.fAddress
+                        sPincode.innerText = data.fPincode
+                        sCity.innerText = data.fCity
+                        sState.innerText = data.fState
+                        sCountry.innerText = data.fCountry
+                        sPhone.innerText = data.phone
+                        FAddress.innerHTML = data.dAddress
+                        fPincode.innerText = data.dPincode
+                        fCity.innerText = data.dCity
+                        fState.innerText = data.dState
+                        fCountry.innerText = data.dCountry
+                        unit.innerText = `Unit: ${data.unitOfMeasurement}`
+                        description.innerText = data.description
+                        data?.paymentType == "half" ? totalCharged.innerText = parseFloat(data.amount) * 2 : totalCharged.innerText = data.amount
+                        totalReceived.innerText = data.amount
+                        data.paymentStatus == "half" ? paymentStatus.innerText = `50% paid` : paymentStatus.innerText = "100% paid"
+                        trackingNo.innerText = data.bookingCode
+                        eWayyBill.innerText = data.wayBil
+
+                        console.log()
+
+                        axios.get(`https://api.onedot.live/api/item_dimensions/getFieldsByBookingCode.php?bookingCode=${data.bookingCode}`)
+                            .then(function (res) {
+                                const data2 = res?.data?.body
+                                let weight = 0;
+                                let volume = 0;
+
+                                data2.map(item => {
+                                    weight += parseFloat(item.weight);
+                                    volume += parseFloat(item.volume);
+                                })
+
+                                packageCount.innerText = data2.length
+
+                                tWeight.innerText = `${weight} Kg(s)`
+                                tHeight.innerText = `Volume: ${volume}`
+                            })
+                            .catch(function (error) {
+                                console.error('Error:', error);
+                                alert('An error occurred. Please try again later.');
+                            });
+
+
+                        getInvoiceData(bookingCode);
+
+                        let invoiceContainer = document.getElementById("invoice-container")
+                        invoiceContainer.style.display = "block";
+
+                    } else {
+                        alert('No data found for given track number')
+
+                    }
+                } else {
+                    alert('Something went wrong. Please try again')
+                }
+            })
+            .catch(function (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again later.');
+            });
+    }
+
+    function getInvoiceData(bookingCode) {
+
+        let invoiceNo = document.getElementById("invoice_no")
+        let invoiceDate = document.getElementById("invoice_date")
+        let invoiceVal = document.getElementById("invoice-value")
+        let hsn = document.getElementById("inv_hsn")
+
+        axios.get(`https://api.onedot.live/api/invoice/getByBookingNumber.php?bookingCode=${bookingCode}`)
+            .then(res => {
+                if (res.status == 200) {
+                    if (res.data.status == 200) {
+                        const data = res.data.body;
+
+                        invoiceNo.innerText = data.invoiceNo
+                        invoiceDate.innerText = data.invoiceDate
+                        invoiceVal.innerText = data.invoiceVal
+                        hsn.innerText = data.hsn
+
+                        invoiceProps = {
+                            id: data.id,
+                            invoiceNo: data.invoiceNo,
+                            invoiceDate: data.invoiceDate,
+                            invoiceVal: data.invoiceVal,
+                            hsn: data.hsn,
+                            bookingCode: bookingCode
+                        }
+                    }
+                }
+            })
+            .catch(err => {
+                alert("Error: " + err.message);
+                throw err;
+            });
+
+    }
+
+    window.onload = function () {
+        document.getElementById("download").addEventListener("click", () => {
+
+            const eWayBill = document.getElementById("e-wayy-bill").value;
+            let eWayyBill = document.getElementById("w-way-bill")
+
+            console.log(eWayBill)
+
+            if (!eWayBill) {
+                alert('Please enter E-Way Bill Numnber')
+                return;
+            }
+
+            eWayyBill.innerText = eWayBill
+
+            invoiceProps = {
+                ...invoiceProps,
+                eWayBill: eWayBill
+            }
+
+
+            console.log(invoiceProps)
+
+            axios.post("https://api.onedot.live/api/invoice/edit.php", invoiceProps)
+                .then(res => {
+                    if (res.status == 200) {
+                        if (res.data.status == 202) {
+                            const invoice = this.document.getElementById("invoice");
+
+                            var opt = {
+                                margin: 1,
+                                filename: 'ldjfglkdjfgjdkfgjlkfdjlg.pdf',
+                                html2canvas: { scale: 2 },
+                                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                            };
+
+                            html2pdf().from(invoice).set(opt).toPdf().get('pdf').then(function (pdf) {
+                                // Check if the image is loaded
+                                if (document.images.length === 0 || document.images[0].complete) {
+                                    pdf.save();
+                                } else {
+                                    // Wait for the image to load
+                                    document.images[0].onload = function () {
+                                        pdf.save();
+                                    };
+                                }
+                            });
+                        }
+                    }
+                })
+                .catch(err => {
+                    alert("Error: " + err.message);
+                    throw err;
+                })
+        });
+    };
+
+</script>
+
+</html>
